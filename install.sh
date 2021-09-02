@@ -198,7 +198,7 @@ echo -e "$GREEN Done...$COL_RESET"
 
 #apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
 #librtmp-dev sendmail mutt screen git
-#apt_install pwgen -y
+apt_install pwgen -y
 #echo -e "$GREEN Done...$COL_RESET"
 #sleep 3
 #
@@ -971,26 +971,26 @@ cd ~
 cd yiimp/sql
 
 # Import sql dump
-sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=clienthost1
+sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend
 
 # Oh the humanity!
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-04-24-market_history.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-04-27-settings.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-11-coins.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-15-benchmarks.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-23-bookmarks.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-06-01-notifications.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-06-04-bench_chips.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-11-23-coins.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-02-05-benchmarks.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-03-31-earnings_index.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-05-accounts_case_swaptime.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-06-payouts_coinid_memo.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-09-notifications.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-10-bookmarks.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-11-segwit.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2018-01-stratums_ports.sql
-sudo mysql --defaults-group-suffix=clienthost1 --force < 2018-02-coins_getinfo.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-04-24-market_history.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-04-27-settings.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-05-11-coins.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-05-15-benchmarks.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-05-23-bookmarks.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-06-01-notifications.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-06-04-bench_chips.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2016-11-23-coins.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-02-05-benchmarks.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-03-31-earnings_index.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-05-accounts_case_swaptime.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-06-payouts_coinid_memo.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-09-notifications.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-10-bookmarks.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2017-11-segwit.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2018-01-stratums_ports.sql
+sudo mysql --defaults-group-suffix=host1 --databases yiimpfrontend --force < 2018-02-coins_getinfo.sql
 echo -e "$GREEN Done...$COL_RESET"
     
 
