@@ -955,7 +955,6 @@ password='"${rootpasswd}"'
 [dj-env]
 secret='"${secret}"'
 ' | sudo -E tee /var/coldforge/.dj.ini >/dev/null 2>&1
-    sudo chmod 0600 /var/coldforge/.dj.ini
 
 
 # Create keys file
