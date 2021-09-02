@@ -148,6 +148,8 @@ hide_output sudo systemctl start mysql
 hide_output sudo systemctl enable mysql
 sleep 5
 sudo systemctl status mysql | sed -n "1,3p"
+apt_install libmysqlclient-dev
+apt_install default-libmysqlclient-dev
 echo
 echo -e "$GREEN Done...$COL_RESET"
 
@@ -379,7 +381,7 @@ blckntifypass=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
 # Compil Blocknotify
 cd ~
 hide_output git clone https://github.com/theLockesmith/coldforge
-mv $HOME/coldforge /var
+sudo mv $HOME/coldforge /var
 cd /var/coldforge
 python3 -m venv /var/coldforge/venv
 source /var/coldforge/venv/bin/activate
