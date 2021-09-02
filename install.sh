@@ -971,26 +971,26 @@ cd ~
 cd yiimp/sql
 
 # Import sql dump
-sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1
+sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=clienthost1
 
 # Oh the humanity!
-sudo mysql --defaults-group-suffix=host1 --force < 2016-04-24-market_history.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-04-27-settings.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-05-11-coins.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-05-15-benchmarks.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-05-23-bookmarks.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-06-01-notifications.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-06-04-bench_chips.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2016-11-23-coins.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-02-05-benchmarks.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-03-31-earnings_index.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-05-accounts_case_swaptime.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-06-payouts_coinid_memo.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-09-notifications.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-10-bookmarks.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2017-11-segwit.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2018-01-stratums_ports.sql
-sudo mysql --defaults-group-suffix=host1 --force < 2018-02-coins_getinfo.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-04-24-market_history.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-04-27-settings.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-11-coins.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-15-benchmarks.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-05-23-bookmarks.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-06-01-notifications.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-06-04-bench_chips.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2016-11-23-coins.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-02-05-benchmarks.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-03-31-earnings_index.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-05-accounts_case_swaptime.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-06-payouts_coinid_memo.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-09-notifications.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-10-bookmarks.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2017-11-segwit.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2018-01-stratums_ports.sql
+sudo mysql --defaults-group-suffix=clienthost1 --force < 2018-02-coins_getinfo.sql
 echo -e "$GREEN Done...$COL_RESET"
     
 
@@ -1155,8 +1155,8 @@ sudo chmod 775 /var/yiimp -R
 (crontab -l 2>/dev/null; echo "@reboot sleep 20 && /etc/screen-scrypt.sh") | crontab -
 
 #fix error screen main "service"
-sudo sed -i 's/service $webserver start/sudo service $webserver start/g' /var/web/yaamp/modules/thread/CronjobController.php
-sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
+#sudo sed -i 's/service $webserver start/sudo service $webserver start/g' /var/web/yaamp/modules/thread/CronjobController.php
+#sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
 
 #fix error screen main "backup sql frontend"
 sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/system.php
@@ -1168,16 +1168,16 @@ sudo rm -rf /var/log/nginx/*
 
 #Hold update OpenSSL
 #If you want remove the hold : sudo apt-mark unhold openssl
-sudo apt-mark hold openssl
+#sudo apt-mark hold openssl
 
 #Restart service
 sudo systemctl restart cron.service
 sudo systemctl restart mysql
 sudo systemctl status mysql | sed -n "1,3p"
-sudo systemctl restart nginx.service
-sudo systemctl status nginx | sed -n "1,3p"
-sudo systemctl restart php7.3-fpm.service
-sudo systemctl status php7.3-fpm | sed -n "1,3p"
+#sudo systemctl restart nginx.service
+#sudo systemctl status nginx | sed -n "1,3p"
+#sudo systemctl restart php7.3-fpm.service
+#sudo systemctl status php7.3-fpm | sed -n "1,3p"
 
 
 echo
