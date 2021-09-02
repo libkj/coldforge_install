@@ -386,8 +386,8 @@ hide_output git clone https://github.com/theLockesmith/coldforge
 echo '
 [env]
 secret='"${secret}"'
-' | sudo -E tee ~/.dj.cnf >/dev/null 2>&1
-    sudo chmod 0600 ~/.dj.cnf
+' | sudo -E tee .dj.cnf >/dev/null 2>&1
+    sudo chmod 0600 .dj.cnf
 
 sudo mv $HOME/coldforge /var
 cd /var/coldforge
