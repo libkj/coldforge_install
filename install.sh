@@ -383,12 +383,13 @@ cd ~
 hide_output git clone https://github.com/theLockesmith/coldforge
 
 # Create dj.cnf
+cd $HOME/coldforge
 echo '
 [env]
 secret='"${secret}"'
 ' | sudo -E tee .dj.cnf >/dev/null 2>&1
     sudo chmod 0600 .dj.cnf
-
+cd ~
 sudo mv $HOME/coldforge /var
 cd /var/coldforge
 python3 -m venv /var/coldforge/venv
