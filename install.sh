@@ -979,6 +979,9 @@ WantedBy=multi-user.target
 Alias=coldforge.service
 ' | sudo -E tee /etc/systemd/system/coldforge.service >/dev/null 2>&1
 
+hide_output sudo systemctl start coldforge.service
+hide_output sudo systemctl enable coldforge.service
+
 
 # Create keys file
 #echo '  
