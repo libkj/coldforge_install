@@ -1215,14 +1215,10 @@ Group='"${whoami}"'
 Environment="PATH=/var/coldforge/venv/bin"
 ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
 WorkingDirectory=/var/coldforge
-KillMode=process
-Restart=always
-RestartPreventExitStatus=255
-RestartSec=1
 
 [Install]
 WantedBy=multi-user.target
-Alias=coldforge.service
+Alias=coldforge
 ' | sudo -E tee /etc/systemd/system/coldforge.service >/dev/null 2>&1
 
 hide_output sudo systemctl daemon-reload
