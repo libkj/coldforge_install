@@ -956,6 +956,29 @@ password='"${rootpasswd}"'
 secret='"${secret}"'
 ' | sudo -E tee /var/coldforge/.dj.ini >/dev/null 2>&1
 
+echo '[Unit]
+Description=Coldforge web service
+Documentation=https://github.com/theLockesmith/coldforge
+After=network.target
+ConditionPathExists=/var/coldforge
+
+[Service]
+ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
+WorkingDirectory=/var/coldforge
+User='"${whoami}"'
+KillMode=process
+Restart=always
+RestartPreventExitStatus=255
+RestartSec=1
+StartLimitIntervalSec=0
+Type=notify
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target
+Alias=coldforge.service
+' | sudo -E tee /etc/systemd/system/coldforge.service >/dev/null 2>&1
+
 
 # Create keys file
 #echo '  
