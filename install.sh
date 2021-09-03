@@ -1219,7 +1219,6 @@ KillMode=process
 Restart=always
 RestartPreventExitStatus=255
 RestartSec=1
-StartLimitIntervalSec=0
 
 [Install]
 WantedBy=multi-user.target
