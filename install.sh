@@ -1215,7 +1215,7 @@ ConditionPathExists=/var/coldforge
 User='"${whoami}"'
 Group='"${whoami}"'
 Environment="PATH=/var/coldforge/venv/bin"
-ExecStart=python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
+ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
 WorkingDirectory=/var/coldforge
 KillMode=process
 Restart=always
