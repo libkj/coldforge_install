@@ -1215,6 +1215,8 @@ Group='"${whoami}"'
 Environment="PATH=/var/coldforge/venv/bin"
 ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
 WorkingDirectory=/var/coldforge
+Type=notify
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target
