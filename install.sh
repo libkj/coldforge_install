@@ -1189,7 +1189,6 @@ sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/syste
 sudo sed -i '14d' /var/web/yaamp/defaultconfig.php
 
 #Misc
-sudo mv $HOME/yiimp/ $HOME/yiimp-install-only-do-not-run-commands-from-this-folder
 sudo rm -rf /var/log/nginx/*
 
 #Hold update OpenSSL
@@ -1209,7 +1208,6 @@ echo '[Unit]
 Description=Coldforge web service
 Documentation=https://github.com/theLockesmith/coldforge
 After=network.target
-ConditionPathExists=/var/coldforge
 
 [Service]
 User='"${whoami}"'
@@ -1217,17 +1215,10 @@ Group='"${whoami}"'
 Environment="PATH=/var/coldforge/venv/bin"
 ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
 WorkingDirectory=/var/coldforge
-KillMode=process
-Restart=always
-RestartPreventExitStatus=255
-RestartSec=1
-StartLimitIntervalSec=0
-Type=notify
-StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target
-Alias=coldforge.service
+Alias=coldforge
 ' | sudo -E tee /etc/systemd/system/coldforge.service >/dev/null 2>&1
 
 hide_output sudo systemctl daemon-reload
