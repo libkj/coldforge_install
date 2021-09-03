@@ -1214,7 +1214,6 @@ ConditionPathExists=/var/coldforge
 [Service]
 ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
 WorkingDirectory=/var/coldforge
-User='"${whoami}"'
 KillMode=process
 Restart=always
 RestartPreventExitStatus=255
