@@ -934,6 +934,61 @@ password='"${rootpasswd}"'
 ' | sudo -E tee ~/.my.cnf >/dev/null 2>&1
     sudo chmod 0600 ~/.my.cnf
 
+# Create dj.json
+clienthost1=$(cat <<-END
+    {
+        "user": "panel",
+        "password": "${password}",
+        "database": "yiimpfrontend",
+        "host": "localhost"
+    }
+END
+)
+
+clienthost2=$(cat <<-END
+    {
+        "user": "stratum",
+        "password": "${password2}",
+        "database": "yiimpfrontend",
+        "host": "localhost"
+    }
+END
+)
+
+mysql=$(cat <<-END
+    {
+        "user": "root",
+        "password": "${rootpasswd}",
+    }
+END
+)
+
+dj-env=$(cat <<-END
+    {
+        "secret": "${secret}",
+    }
+END
+)
+
+allowed-hosts=$(cat <<-END
+    {
+        "hosts": "['.coldforge.net','127.0.0.1']",
+    }
+END
+)
+
+JSON=$(cat <<-END
+    {
+        "clienthost1": "${clienthost1}",
+        "clienthost2": "${clienthost2}",
+        "mysql": "${mysql}",
+        "dj-env": "${dj-env}",
+        "allowed-hosts": "${allowed-hosts}",
+    }
+END
+)
+
+echo JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
 
 # Create dj.ini
 echo '[clienthost1]
