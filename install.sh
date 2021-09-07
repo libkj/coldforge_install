@@ -988,7 +988,7 @@ JSON=$(cat <<-END
 END
 )
 
-echo JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
+echo $JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
 
 # Create dj.ini
 echo '[clienthost1]
