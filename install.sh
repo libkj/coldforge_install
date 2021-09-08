@@ -375,7 +375,7 @@ blckntifypass=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
 if [ -d "/var/coldforge" ]; then sudo rm -Rf /var/coldforge; fi
 cd ~
 hide_output git clone https://github.com/theLockesmith/coldforge
-sudo mv $HOME/coldforge /var
+sudo cp -r $HOME/coldforge/{favicon,framework,log,web,.dj.json,LICENSE,manage.py,README.md,requirements.txt} /var
 cd /var/coldforge
 python3 -m venv /var/coldforge/venv
 source /var/coldforge/venv/bin/activate
