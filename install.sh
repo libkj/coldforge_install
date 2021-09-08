@@ -101,6 +101,8 @@ echo
 #read -e -p "Enter the Public IP of the system you will use to access the admin panel (http://www.whatsmyip.org/) : " Public
 read -e -p "Enter list of allowed hosts, separated by a comma : " HOSTS
 IFS=',' read -ra HOSTS <<< "$HOSTS"
+IFS=\, eval 'HOSTS="${HOSTS[*]@Q}"'
+HOSTS=$(echo $HOSTS | tr \' \")
 #read -e -p "Install Fail2ban? [Y/n] : " install_fail2ban
 #read -e -p "Install UFW and configure ports? [Y/n] : " UFW
 #read -e -p "Install LetsEncrypt SSL? IMPORTANT! You MUST have your domain name pointed to this server prior to running the script!! [Y/n]: " ssl_install
@@ -372,11 +374,12 @@ echo -e "$GREEN Done...$COL_RESET"
 blckntifypass=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
 
 # Compil Blocknotify
+if [ -d "$HOME/coldforge" ]; then sudo rm -Rf $HOME/coldforge; fi
 if [ -d "/var/coldforge" ]; then sudo rm -Rf /var/coldforge; fi
 cd ~
 hide_output git clone https://github.com/theLockesmith/coldforge
 sudo cp -r $HOME/coldforge/ /var/
-sudo chmod 775 /var/coldforge -R
+sudo chmod 777 /var/coldforge -R
 cd /var/coldforge
 python3 -m venv /var/coldforge/venv
 source /var/coldforge/venv/bin/activate
@@ -398,14 +401,13 @@ fi
 hide_output sudo make
 
 # Copy Files (Blocknotify,iniparser,Stratum)
-"""
-sudo sed -i 's/AdminRights/'AdminPanel'/' /var/coldforge/web/yaamp/modules/site/SiteController.php
-sudo cp -r /var/coldforge/web /var/
-sudo mkdir -p /var/stratum
-"""
+#sudo sed -i 's/AdminRights/'AdminPanel'/' /var/coldforge/web/yaamp/modules/site/SiteController.php
+#sudo cp -r /var/coldforge/web /var/
+#sudo mkdir -p /var/stratum
+
 cd /var/coldforge/stratum
 sudo cp -a config.sample/. /var/stratum/config
-sudo cp -r stratum /var/stratum
+sudo cp -r /var/coldforge/stratum /var/stratum
 sudo cp -r run.sh /var/stratum
 cd /var/coldforge
 sudo cp -r /var/coldforge/bin/. /bin/
@@ -894,12 +896,6 @@ sleep 3
 
 
 # Create database
-Q1="CREATE DATABASE IF NOT EXISTS settings;"
-Q2="GRANT ALL ON *.* TO 'security'@'localhost' IDENTIFIED BY '$password';"
-Q3="FLUSH PRIVILEGES;"
-SQL="${Q1}${Q2}${Q3}"
-sudo mysql -u root -p="" -e "$SQL"
-
 Q1="CREATE DATABASE IF NOT EXISTS frontend;"
 Q2="GRANT ALL ON *.* TO 'panel'@'localhost' IDENTIFIED BY '$password';"
 Q3="FLUSH PRIVILEGES;"
@@ -958,19 +954,16 @@ mysql=$(cat <<-END
 END
 )
 
-serversettings=$(cat <<-END
+dj_env=$(cat <<-END
     {
-      "user": "backend",
-      "password": "${settingspassword}",
-      "database": "serversettings",
-      "host": "localhost"
+        "secret": "${secret}"
     }
 END
 )
 
-dj_env=$(cat <<-END
+allowed_hosts=$(cat <<-END
     {
-        "secret": "${secret}"
+        "hosts": [${HOSTS}]
     }
 END
 )
@@ -981,7 +974,8 @@ JSON=$(cat <<-END
         "clienthost2": ${clienthost2},
         "serversettings": ${serversettings},
         "mysql": ${mysql},
-        "dj-env": ${dj_env}
+        "dj-env": ${dj_env},
+        "allowed-hosts": ${allowed_hosts}
     }
 END
 )
@@ -1032,7 +1026,6 @@ cd /var/coldforge/sql
 sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1 --database frontend
 
 # Oh the humanity!
-sudo mysql --defaults-group-suffix=host1 --database settings --force < settings.sql
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-04-24-market_history.sql
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-04-27-settings.sql
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-05-11-coins.sql
@@ -1050,12 +1043,6 @@ sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-10-b
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-11-segwit.sql
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2018-01-stratums_ports.sql
 sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2018-02-coins_getinfo.sql
-
-# Generate settings.sql file
-for host in ${HOSTS[*]}; do
-    echo "INSERT INTO \`allowed_hosts\`(\`host\`) VALUES (\`$host\`)" | sudo -E tee -a allowed-hosts.sql > /dev/null 2>&1
-done
-sudo mysql --defaults-group-suffix=host1 --database settings --force < allowed-hosts.sql
 
 echo -e "$GREEN Done...$COL_RESET"
     
