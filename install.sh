@@ -972,7 +972,6 @@ JSON=$(cat <<-END
     {
         "clienthost1": ${clienthost1},
         "clienthost2": ${clienthost2},
-        "serversettings": ${serversettings},
         "mysql": ${mysql},
         "dj-env": ${dj_env},
         "allowed-hosts": ${allowed_hosts}
