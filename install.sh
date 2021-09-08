@@ -376,6 +376,7 @@ if [ -d "/var/coldforge" ]; then sudo rm -Rf /var/coldforge; fi
 cd ~
 hide_output git clone https://github.com/theLockesmith/coldforge
 sudo cp -r $HOME/coldforge/ /var/
+sudo chmod 775 /var/coldforge -R
 cd /var/coldforge
 python3 -m venv /var/coldforge/venv
 source /var/coldforge/venv/bin/activate
