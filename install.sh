@@ -24,6 +24,13 @@ displayErr() {
     exit 1;
 }
 
+# Generating Random Passwords
+password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+password2=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+secret=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 128 | head -n 1`
+rootpassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1`
+settingspassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+
 #Add user group sudo + no password
 whoami=`whoami`
 sudo usermod -aG sudo ${whoami}
@@ -143,7 +150,6 @@ echo
 sleep 3
     
 # Create random password
-rootpasswd=$(openssl rand -base64 12)
 export DEBIAN_FRONTEND="noninteractive"
 apt_install mariadb-server
 hide_output sudo systemctl start mysql
@@ -202,7 +208,6 @@ echo -e "$GREEN Done...$COL_RESET"
 
 #apt_install libgmp3-dev libmysqlclient-dev libcurl4-gnutls-dev libkrb5-dev libldap2-dev libidn11-dev gnutls-dev \
 #librtmp-dev sendmail mutt screen git
-apt_install pwgen -y
 #echo -e "$GREEN Done...$COL_RESET"
 #sleep 3
 #
@@ -228,20 +233,7 @@ apt_install pwgen -y
 #sed -i ‘s/__atomic_compare_exchange/__atomic_compare_exchange_db/g’ dbinc/atomic.h
 #cd ..
 #echo -e "$GREEN Done...$COL_RESET"
-    
-
-# Generating Random Passwords
-password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
-password2=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
-secret=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 128 | head -n 1`
-rootpassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1`
-settingspassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
-
-###########################################################################################################
-##                                                                                                       ##
-##  MULTI-LINE COMMENT! THIS IS WIP! THIS WILL NEED TO BE REMOVED OR UNCOMMENTED WHEN THIS IS FINISHED!  ##
-##                                                                                                       ##
-###########################################################################################################
+#
 ## Test Email
 #echo
 #echo
@@ -362,7 +354,7 @@ settingspassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1
 #echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect" | sudo debconf-set-selections
 #echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | sudo debconf-set-selections
 #echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | sudo debconf-set-selections
-#echo "phpmyadmin phpmyadmin/mysql/admin-pass password $rootpasswd" | sudo debconf-set-selections
+#echo "phpmyadmin phpmyadmin/mysql/admin-pass password $rootpassword" | sudo debconf-set-selections
 #apt_install phpmyadmin
 #echo -e "$GREEN Done...$COL_RESET"
 #
@@ -389,43 +381,39 @@ python3 -m venv /var/coldforge/venv
 source /var/coldforge/venv/bin/activate
 python3 -m pip install wheel
 cat requirements.txt | xargs -n 1 python3 -m pip install
-
-
-# Compil Blocknotify
-cd ~
-hide_output git clone https://github.com/tpruvot/yiimp
-cd $HOME/yiimp/blocknotify
+cd /var/coldforge/blocknotify
 sudo sed -i 's/tu8tu5/'$blckntifypass'/' blocknotify.cpp
 hide_output sudo make
 
 # Compil iniparser
-cd $HOME/yiimp/stratum/iniparser
+cd /var/coldforge/stratum/iniparser
 hide_output sudo make
 
 # Compil Stratum
-cd $HOME/yiimp/stratum
+cd /var/coldforge/stratum
 if [[ ("$BTC" == "y" || "$BTC" == "Y") ]]; then
-sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' $HOME/yiimp/stratum/Makefile
+sudo sed -i 's/CFLAGS += -DNO_EXCHANGE/#CFLAGS += -DNO_EXCHANGE/' /var/coldforge/stratum/Makefile
 fi
 hide_output sudo make
 
 # Copy Files (Blocknotify,iniparser,Stratum)
-cd $HOME/yiimp
-sudo sed -i 's/AdminRights/'AdminPanel'/' $HOME/yiimp/web/yaamp/modules/site/SiteController.php
-sudo cp -r $HOME/yiimp/web /var/
+"""
+sudo sed -i 's/AdminRights/'AdminPanel'/' /var/coldforge/web/yaamp/modules/site/SiteController.php
+sudo cp -r /var/coldforge/web /var/
 sudo mkdir -p /var/stratum
-cd $HOME/yiimp/stratum
+"""
+cd /var/coldforge/stratum
 sudo cp -a config.sample/. /var/stratum/config
 sudo cp -r stratum /var/stratum
 sudo cp -r run.sh /var/stratum
-cd $HOME/yiimp
-sudo cp -r $HOME/yiimp/bin/. /bin/
-sudo cp -r $HOME/yiimp/blocknotify/blocknotify /usr/bin/
-sudo cp -r $HOME/yiimp/blocknotify/blocknotify /var/stratum/
-sudo mkdir -p /etc/yiimp
-sudo mkdir -p /$HOME/backup/
-#fixing yiimp
-sudo sed -i "s|ROOTDIR=/data/yiimp|ROOTDIR=/var|g" /bin/yiimp
+cd /var/coldforge
+sudo cp -r /var/coldforge/bin/. /bin/
+sudo cp -r /var/coldforge/blocknotify/blocknotify /usr/bin/
+sudo cp -r /var/coldforge/blocknotify/blocknotify /var/stratum/
+sudo mkdir -p /etc/coldforge
+
+#fixing coldforge
+sudo sed -i "s|ROOTDIR=/data/coldforge|ROOTDIR=/var|g" /bin/coldforge
 #fixing run.sh
 sudo rm -r /var/stratum/config/run.sh
 echo '
@@ -468,7 +456,7 @@ echo -e "$CYAN => Creating webserver initial config file $COL_RESET"
 echo
 
 # Adding user to group, creating dir structure, setting permissions
-sudo mkdir -p /var/www/$server_name/html
+#sudo mkdir -p /var/www/$server_name/html
 ###########################################################################################################
 ##                                                                                                       ##
 ##  MULTI-LINE COMMENT! THIS IS WIP! THIS WILL NEED TO BE REMOVED OR UNCOMMENTED WHEN THIS IS FINISHED!  ##
@@ -911,7 +899,7 @@ Q3="FLUSH PRIVILEGES;"
 SQL="${Q1}${Q2}${Q3}"
 sudo mysql -u root -p="" -e "$SQL"
 
-Q1="CREATE DATABASE IF NOT EXISTS yiimpfrontend;"
+Q1="CREATE DATABASE IF NOT EXISTS frontend;"
 Q2="GRANT ALL ON *.* TO 'panel'@'localhost' IDENTIFIED BY '$password';"
 Q3="FLUSH PRIVILEGES;"
 SQL="${Q1}${Q2}${Q3}"
@@ -927,16 +915,16 @@ sudo mysql -u root -p="" -e "$SQL"
 echo '[clienthost1]
 user=panel
 password='"${password}"'
-database=yiimpfrontend
+database=frontend
 host=localhost
 [clienthost2]
 user=stratum
 password='"${password2}"'
-database=yiimpfrontend
+database=frontend
 host=localhost
 [mysql]
 user=root
-password='"${rootpasswd}"'
+password='"${rootpassword}"'
 ' | sudo -E tee ~/.my.cnf >/dev/null 2>&1
     sudo chmod 0600 ~/.my.cnf
 
@@ -945,7 +933,7 @@ clienthost1=$(cat <<-END
     {
         "user": "panel",
         "password": "${password}",
-        "database": "yiimpfrontend",
+        "database": "frontend",
         "host": "localhost"
     }
 END
@@ -955,7 +943,7 @@ clienthost2=$(cat <<-END
     {
         "user": "stratum",
         "password": "${password2}",
-        "database": "yiimpfrontend",
+        "database": "frontend",
         "host": "localhost"
     }
 END
@@ -1003,7 +991,7 @@ echo $JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
 # Create keys file
 #echo '  
 #<?php
-#/* Sample config file to put in /etc/yiimp/keys.php */
+#/* Sample config file to put in /etc/coldforge/keys.php */
 #define('"'"'YIIMP_MYSQLDUMP_USER'"'"', '"'"'panel'"'"');
 #define('"'"'YIIMP_MYSQLDUMP_PASS'"'"', '"'"''"${password}"''"'"');
 #define('"'"'YIIMP_MYSQLDUMP_PATH'"'"', '"'"''"/var/yiimp/sauv"''"'"');
@@ -1022,7 +1010,7 @@ echo $JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
 #define('"'"'EXCH_NOVA_SECRET'"'"','"'"''"'"');
 #define('"'"'EXCH_POLONIEX_SECRET'"'"', '"'"''"'"');
 #define('"'"'EXCH_YOBIT_SECRET'"'"', '"'"''"'"');
-#' | sudo -E tee /etc/yiimp/keys.php >/dev/null 2>&1
+#' | sudo -E tee /etc/coldforge/keys.php >/dev/null 2>&1
 
 #echo -e "$GREEN Done...$COL_RESET"
 
@@ -1030,37 +1018,37 @@ echo $JSON | sudo -E tee /var/coldforge/.dj.json > /dev/null 2>&1
 # Peforming the SQL import
 echo
 echo
-echo -e "$CYAN => Database 'yiimpfrontend' and users 'panel' and 'stratum' created with password $password and $password2, will be saved for you $COL_RESET"
+echo -e "$CYAN => Database 'frontend' and users 'panel' and 'stratum' created with password $password and $password2, will be saved for you $COL_RESET"
 echo
 echo -e "Performing the SQL import"
 echo
 sleep 3
 
 cd ~
-cd yiimp/sql
+cd /var/coldforge/sql
 
 # Import sql dump
-sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend
+sudo zcat 2016-04-03-yaamp.sql.gz | sudo mysql --defaults-group-suffix=host1 --database frontend
 
 # Oh the humanity!
 sudo mysql --defaults-group-suffix=host1 --database settings --force < settings.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-04-24-market_history.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-04-27-settings.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-05-11-coins.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-05-15-benchmarks.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-05-23-bookmarks.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-06-01-notifications.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-06-04-bench_chips.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2016-11-23-coins.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-02-05-benchmarks.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-03-31-earnings_index.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-05-accounts_case_swaptime.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-06-payouts_coinid_memo.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-09-notifications.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-10-bookmarks.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2017-11-segwit.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2018-01-stratums_ports.sql
-sudo mysql --defaults-group-suffix=host1 --database yiimpfrontend --force < 2018-02-coins_getinfo.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-04-24-market_history.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-04-27-settings.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-05-11-coins.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-05-15-benchmarks.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-05-23-bookmarks.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-06-01-notifications.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-06-04-bench_chips.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2016-11-23-coins.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-02-05-benchmarks.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-03-31-earnings_index.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-05-accounts_case_swaptime.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-06-payouts_coinid_memo.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-09-notifications.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-10-bookmarks.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2017-11-segwit.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2018-01-stratums_ports.sql
+sudo mysql --defaults-group-suffix=host1 --database frontend --force < 2018-02-coins_getinfo.sql
 
 # Generate settings.sql file
 for host in ${HOSTS[*]}; do
@@ -1090,7 +1078,7 @@ echo -e "$GREEN Done...$COL_RESET"
 #define('"'"'YAAMP_BIN'"'"', '"'"'/var/bin'"'"');
 #
 #define('"'"'YAAMP_DBHOST'"'"', '"'"'localhost'"'"');
-#define('"'"'YAAMP_DBNAME'"'"', '"'"'yiimpfrontend'"'"');
+#define('"'"'YAAMP_DBNAME'"'"', '"'"'frontend'"'"');
 #define('"'"'YAAMP_DBUSER'"'"', '"'"'panel'"'"');
 #define('"'"'YAAMP_DBPASSWORD'"'"', '"'"''"${password}"''"'"');
 #
@@ -1192,7 +1180,7 @@ cd /var/stratum/config
 sudo sed -i 's/password = tu8tu5/password = '$blckntifypass'/g' *.conf
 sudo sed -i 's/server = yaamp.com/server = '$server_name'/g' *.conf
 sudo sed -i 's/host = yaampdb/host = localhost/g' *.conf
-sudo sed -i 's/database = yaamp/database = yiimpfrontend/g' *.conf
+sudo sed -i 's/database = yaamp/database = frontend/g' *.conf
 sudo sed -i 's/username = root/username = stratum/g' *.conf
 sudo sed -i 's/password = patofpaq/password = '$password2'/g' *.conf
 cd ~
@@ -1215,17 +1203,17 @@ sudo find /var/web -type f -exec chmod 664 {} +
 sudo chgrp www-data /var/web -R
 sudo chmod g+w /var/web -R
 
-sudo mkdir /var/log/yiimp
-sudo touch /var/log/yiimp/debug.log
-sudo chgrp www-data /var/log/yiimp -R
-sudo chmod 775 /var/log/yiimp -R
+sudo mkdir /var/log/coldforge
+sudo touch /var/log/coldforge/debug.log
+sudo chgrp www-data /var/log/coldforge -R
+sudo chmod 775 /var/log/coldforge -R
 
 sudo chgrp www-data /var/stratum -R
 sudo chmod 775 /var/stratum
 
-sudo mkdir -p /var/yiimp/sauv
-sudo chgrp www-data /var/yiimp -R
-sudo chmod 775 /var/yiimp -R
+sudo mkdir -p /var/coldforge/sauv
+sudo chgrp www-data /var/coldforge -R
+sudo chmod 775 /var/coldforge -R
 
 
 #Add to contrab screen-scrypt
@@ -1236,7 +1224,7 @@ sudo chmod 775 /var/yiimp -R
 #sudo sed -i 's/service nginx stop/sudo service nginx stop/g' /var/web/yaamp/modules/thread/CronjobController.php
 
 #fix error screen main "backup sql frontend"
-sudo sed -i "s|/root/backup|/var/yiimp/sauv|g" /var/web/yaamp/core/backend/system.php
+sudo sed -i "s|/root/backup|/var/coldforge/sauv|g" /var/web/yaamp/core/backend/system.php
 sudo sed -i '14d' /var/web/yaamp/defaultconfig.php
 
 #Misc
@@ -1254,29 +1242,6 @@ sudo systemctl status mysql | sed -n "1,3p"
 #sudo systemctl status nginx | sed -n "1,3p"
 #sudo systemctl restart php7.3-fpm.service
 #sudo systemctl status php7.3-fpm | sed -n "1,3p"
-
-echo '[Unit]
-Description=Coldforge web service
-Documentation=https://github.com/theLockesmith/coldforge
-After=network.target
-
-[Service]
-User='"${whoami}"'
-Group='"${whoami}"'
-Environment="PATH=/var/coldforge/venv/bin"
-ExecStart=/var/coldforge/venv/bin/python3 /var/coldforge/manage.py runserver 0.0.0.0:8000
-WorkingDirectory=/var/coldforge
-Type=notify
-StandardOutput=journal+console
-
-[Install]
-WantedBy=multi-user.target
-Alias=coldforge
-' | sudo -E tee /etc/systemd/system/coldforge.service >/dev/null 2>&1
-
-hide_output sudo systemctl daemon-reload
-hide_output sudo systemctl start coldforge.service
-hide_output sudo systemctl enable coldforge.service
 
 
 echo
@@ -1304,7 +1269,7 @@ echo -e "$RED If you want change 'AdminPanel' to access Panel Admin : Edit this 
 echo -e "$RED Line 11 => change 'AdminPanel' and use the new address"
 echo
 echo -e "$CYAN Please make sure to change your public keys / wallet addresses in the /var/web/serverconfig.php file. $COL_RESET"
-echo -e "$CYAN Please make sure to change your private keys in the /etc/yiimp/keys.php file. $COL_RESET"
+echo -e "$CYAN Please make sure to change your private keys in the /etc/coldforge/keys.php file. $COL_RESET"
 echo
 echo -e "$CYAN TUTO Youtube : https://www.youtube.com/watch?v=qE0rhfJ1g2k $COL_RESET"
 echo -e "$CYAN Xavatar WebSite : https://www.xavatar.com $COL_RESET"
