@@ -979,11 +979,11 @@ END
 
 JSON=$(cat <<-END
     {
-        "clienthost1": "${clienthost1}",
-        "clienthost2": "${clienthost2}",
-        "mysql": "${mysql}",
-        "dj-env": "${dj-env}",
-        "allowed-hosts": "${allowed-hosts}",
+        "clienthost1": ${clienthost1},
+        "clienthost2": ${clienthost2},
+        "mysql": ${mysql},
+        "dj-env": ${dj-env},
+        "allowed-hosts": ${allowed-hosts},
     }
 END
 )
